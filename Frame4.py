@@ -7,10 +7,10 @@ import os
 def create(parent):
     return Frame4(parent)
 
-[wxID_FRAME4, wxID_FRAME4LISTBOX1, wxID_FRAME4PANEL1, wxID_FRAME4STATICTEXT1, 
- wxID_FRAME4STATICTEXT2, wxID_FRAME4TEXTCTRL1, wxID_FRAME4TOGGLEBUTTON1, 
- wxID_FRAME4TOGGLEBUTTON2, wxID_FRAME4TOGGLEBUTTON3, 
-] = [wx.NewId() for _init_ctrls in range(9)]
+[wxID_FRAME4, wxID_FRAME4COMBOBOX1, wxID_FRAME4LISTBOX1, wxID_FRAME4PANEL1, 
+ wxID_FRAME4STATICTEXT1, wxID_FRAME4STATICTEXT2, wxID_FRAME4TEXTCTRL1, 
+ wxID_FRAME4TOGGLEBUTTON1, wxID_FRAME4TOGGLEBUTTON2, wxID_FRAME4TOGGLEBUTTON3, 
+] = [wx.NewId() for _init_ctrls in range(10)]
 
 class Frame4(wx.Frame):
     def _init_ctrls(self, prnt):
@@ -44,20 +44,21 @@ class Frame4(wx.Frame):
 
         self.toggleButton1 = wx.ToggleButton(id=wxID_FRAME4TOGGLEBUTTON1,
               label=u'ADD', name='toggleButton1', parent=self.panel1,
-              pos=wx.Point(72, 216), size=wx.Size(88, 40), style=0)
+              pos=wx.Point(72, 288), size=wx.Size(88, 40), style=0)
         self.toggleButton1.SetValue(False)
+        self.toggleButton1.Enable(False)
         self.toggleButton1.Bind(wx.EVT_TOGGLEBUTTON,
               self.OnToggleButton1Togglebutton, id=wxID_FRAME4TOGGLEBUTTON1)
 
         self.toggleButton2 = wx.ToggleButton(id=wxID_FRAME4TOGGLEBUTTON2,
               label=u'REMOVE', name='toggleButton2', parent=self.panel1,
-              pos=wx.Point(72, 280), size=wx.Size(88, 40), style=0)
+              pos=wx.Point(72, 344), size=wx.Size(88, 40), style=0)
         self.toggleButton2.SetValue(False)
         self.toggleButton2.Bind(wx.EVT_TOGGLEBUTTON,
               self.OnToggleButton2Togglebutton, id=wxID_FRAME4TOGGLEBUTTON2)
 
         self.listBox1 = wx.ListBox(choices=[], id=wxID_FRAME4LISTBOX1,
-              name='listBox1', parent=self.panel1, pos=wx.Point(200, 216),
+              name='listBox1', parent=self.panel1, pos=wx.Point(200, 288),
               size=wx.Size(112, 104), style=0)
         self.listBox1.Bind(wx.EVT_LISTBOX, self.OnListBox1Listbox,
               id=wxID_FRAME4LISTBOX1)
@@ -69,21 +70,43 @@ class Frame4(wx.Frame):
         self.toggleButton3.Bind(wx.EVT_TOGGLEBUTTON,
               self.OnToggleButton3Togglebutton, id=wxID_FRAME4TOGGLEBUTTON3)
 
+        # added combo box with two choices and an event is associated with it
+        self.comboBox1 = wx.ComboBox(choices=["string", "decimal"],
+              id=wxID_FRAME4COMBOBOX1, name='comboBox1', parent=self.panel1,
+              pos=wx.Point(72, 192), size=wx.Size(248, 21), style=0,
+              value=u'selectVariableType')
+        self.comboBox1.SetLabel(u'selectVariableType')
+        self.comboBox1.Bind(wx.EVT_COMBOBOX, self.OnComboBox1Combobox,
+              id=wxID_FRAME4COMBOBOX1)
+
     def __init__(self, parent):
         self._init_ctrls(parent)
 
     def OnToggleButton1Togglebutton(self, event):
         s1=self.textCtrl1.GetValue()
         s2=''
+        # once the add button is pressed it is disabled
+        self.toggleButton1.Enable(False)
+        
 
         #f = open('First.txt','w')
         #f.close()
         if s1==s2:
-            wx.MessageBox('Please Enter Value')
+            wx.MessageBox('Please Enter Value and type')
+            self.toggleButton1.Enable(False)
+        
+
+
         else:
             
             self.listBox1.Append(self.textCtrl1.GetValue())
             self.textCtrl1.SetValue('')
+            #c has the value of the type of variable entered(string/decimal)
+            c=self.comboBox1.GetValue()
+            self.toggleButton1.Enable(False)
+        
+
+           
                 
                 
 
@@ -151,8 +174,6 @@ class Frame4(wx.Frame):
                         cursor = conn.cursor()
 
                         cursor.execute('''ALTER TABLE information ADD COLUMN '''+self.listBox1.GetString(i))
-                        conn.commit()
-                        conn.close()
                     wx.MessageBox('Values Entered Successfully. Your Database has been created')
                     self.Destroy()
             except:
@@ -166,3 +187,16 @@ class Frame4(wx.Frame):
 
     def OnListBox1Listbox(self, event):
         event.Skip()
+
+    # as soon as a value is entered the add button is enabled
+    def OnComboBox1Combobox(self, event):
+        self.toggleButton1.Enable(True)
+        
+        
+    def OnComboBox1TextEnter(self, event):
+        event.Skip()
+
+    
+    
+        
+        
